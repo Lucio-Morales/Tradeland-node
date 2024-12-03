@@ -1,14 +1,23 @@
 import express from 'express';
+import cors from 'cors';
+import mainRouter from './routes';
 import { prisma } from './config/database';
 
 const app = express();
 
+// app.use(cors({
+//   origin: '*',  // Puedes especificar el origen permitido, por ejemplo, 'http://localhost:3000' si es necesario.
+//   methods: ['GET', 'POST'],  // Métodos permitidos
+//   allowedHeaders: ['Content-Type', 'Authorization'],  // Cabeceras permitidas
+// }));
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Servidor on papi');
-});
-
+app.use('/', mainRouter);
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
