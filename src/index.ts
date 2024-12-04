@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mainRouter from './routes';
 import { prisma } from './config/database';
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(
 app.use(express.json());
 
 app.use('/', mainRouter);
+app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {

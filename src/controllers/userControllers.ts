@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { CreateUserDTO } from 'src/types/userTypes';
-import { createUser } from '../services/index';
+import { createUser, loginUser } from '../services/index';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -33,6 +33,25 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = (req: Request, res: Response) => {};
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ message: 'Email and password are required' });
+      return;
+    }
+
+    const { user, token } = await loginUser(email, password);
+
+    res.status(200).json({ user, token });
+  } catch (error: any) {
+    next(error);
+  }
+};
 
 export const getUser = (req: Request, res: Response) => {};
