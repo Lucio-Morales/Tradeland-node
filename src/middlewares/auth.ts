@@ -1,23 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from 'src/utils/jwt';
+import { verifyToken } from '../utils/jwt';
 
-export const authenticate = (
+export const validateToken = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  const authHeader = req.headers.authorization;
+): void => {
+  const authHeader = req.headers['authorization'];
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Unauthorized' });
+  if (!authHeader) {
+    res.status(401).json({ message: 'Access token is missing' });
+    return;
   }
+
   const token = authHeader.split(' ')[1];
-  const decoded = verifyToken(token);
-
-  if (!decoded) {
-    return res.status(401).json({ message: 'Invalid token' });
+  if (!token) {
+    res.status(401).json({ message: 'Token is missing' });
+    return;
   }
 
-  req.user = decoded as { id: string; email: string };
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    res.status(403).json({ message: 'Invalid or expired token' });
+    return;
+  }
+
+  (req as any).user = decoded;
   next();
 };

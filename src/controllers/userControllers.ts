@@ -41,11 +41,13 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
+    //Si no hay email o password, error:
     if (!email || !password) {
       res.status(400).json({ message: 'Email and password are required' });
       return;
     }
 
+    //Si estan todos los campos, ejecuto el service loginUser:
     const { user, token } = await loginUser(email, password);
 
     res.status(200).json({ user, token });
